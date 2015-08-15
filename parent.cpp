@@ -8,6 +8,9 @@
 #include <sstream>
 #include <utils.h>
 #include <boost/filesystem.hpp>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using namespace std;
 using namespace boost::filesystem;
 
@@ -77,6 +80,26 @@ int Parent::CreateChild( int cn )
     }
 
 }
+
+int Parent::CreateFifo(char *name)
+{
+   struct stat status;
+
+   if( stat(name, &status) == 0)
+   {
+     myFile << Utils::currentDateTime() << ": fifo " << name << "already exists.";
+     return -1;
+   }
+
+   if( mkfifo(name, 0666) != 0 )
+   {
+     myFile << Utils::currentDateTime() <<  ": Unable to create the fifo " <<  name<<  " . error: ", errno;
+     return -1;
+   }
+
+   return 0;
+}
+
 
 void Parent::CreateChildren()
 {

@@ -26,6 +26,7 @@ private:
      //-- Private functions
     bool IAmTheParent() ;
     void CreateChildren() ;
+    int CreateFifo (char *) ;
 };
 
 #endif
