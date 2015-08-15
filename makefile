@@ -5,7 +5,7 @@ SOURCE=$(wildcard *.cpp)
 MYPROGRAM=parentNChild
 MYINCLUDES=.
 
-MYLIBRARIES=pthread
+MYLIBRARIES=pthread -lboost_filesystem-mt
 CC=g++
 
 #------------------------------------------------------------------------------

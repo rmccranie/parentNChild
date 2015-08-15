@@ -7,8 +7,9 @@
 #include <cstring>
 #include <sstream>
 #include <utils.h>
-
+#include <boost/filesystem.hpp>
 using namespace std;
+using namespace boost::filesystem;
 
 void sighandler(int signum, siginfo_t *info, void *ptr)
 {
@@ -95,6 +96,11 @@ int Parent::Run()
     sleepTime.tv_sec = 1 ;
     sleepTime.tv_nsec = 0 ;
     stringstream filename ;
+
+    //-- Use boost library, but should really do better error/exception handling here.
+    //-- TODO: create_directories may throw exception.
+    create_directories (Settings::getLogPath().c_str()) ;
+
     filename << Settings::getLogPath() << "/Parent_log.txt" ;
     
     myFile.open (filename.str().c_str(), std::ofstream::out | std::ofstream::app);    
