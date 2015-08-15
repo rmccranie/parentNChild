@@ -5,11 +5,15 @@
 #include <sys/prctl.h>
 #include <ctime>
 #include <cstring>
+#include <sstream>
+#include <utils.h>
 
 using namespace std;
 
 void sighandler(int signum, siginfo_t *info, void *ptr)
 {
+    //-- not really supposed to print from signal handler context, but can get away with it 
+    //-- for demo app
     cout << "Received signal " << signum << endl ;
     cout << "Signal originates from process " << (unsigned long)info->si_pid << endl ;
 }
@@ -21,21 +25,7 @@ Parent::Parent()
     parentPid = getpid() ;
     
     memset(&act, 0, sizeof(act));
-    cout << "creating a parent..." << endl ;
-} 
-
-bool Parent::IAmTheParent()
-{
-    return getpid() == parentPid ;
-}
-
-int Parent::CreateChild()
-{
-    if ( !IAmTheParent() )
-        return 0 ;
-
-    pid_t PID = 0;
-    int result = 0, filedes[2], status;
+    myFile << Utils::currentDateTime() << ": creating a parent..." << endl ;
     char mynameis[] = "Parent" ;
     prctl(PR_SET_NAME, (unsigned long) mynameis, 0, 0, 0);
  
@@ -43,6 +33,20 @@ int Parent::CreateChild()
     act.sa_sigaction = sighandler;
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGTERM, &act, NULL);
+
+} 
+
+bool Parent::IAmTheParent()
+{
+    return getpid() == parentPid ;
+}
+
+int Parent::CreateChild( int cn )
+{
+    int result = 0, filedes[2], status;
+    pid_t PID = 0;
+    if ( !IAmTheParent() )
+        return 0 ;
 
     /* Create child process: */
     PID = fork();
@@ -54,7 +58,7 @@ int Parent::CreateChild()
     result = pipe(filedes);
 
     if (PID != 0) {
-        std::cout << "Created child process. PID: " << PID << "\n";
+        myFile << Utils::currentDateTime() << ": Created child process. PID: " << PID << "\n";
     }
 
     if (result == -1) {
@@ -63,14 +67,12 @@ int Parent::CreateChild()
 
     if (PID == 0) { // This is the child process
         //std::string prog = "./" + path;
-        cout << "Starting the child!" << endl ;
-        Child *c = new Child();
+        Child *c = new Child(cn);
         c->Run() ;
-        //execvp(prog.c_str(), NULL); // Execute the program
-    } else { // This is the parent process
-//        waitpid(PID, &status, 0); // Wait for the child process to return.
-        cout << "Process returned " << WEXITSTATUS(status) << ".\n";
-        cout << "Press enter.\n";
+    } 
+    else 
+    { // This is the parent process
+
     }
 
 }
@@ -80,7 +82,7 @@ void Parent::CreateChildren()
 
     for ( int i = 0; i < numberOfChildren; i++ )
     {
-        CreateChild();
+        CreateChild(i);
     }
 }
 int Parent::Run()
@@ -92,23 +94,29 @@ int Parent::Run()
     struct timespec sleepTime ;
     sleepTime.tv_sec = 1 ;
     sleepTime.tv_nsec = 0 ;
+    stringstream filename ;
+    filename << Settings::getLogPath() << "/Parent_log.txt" ;
+    
+    myFile.open (filename.str().c_str(), std::ofstream::out | std::ofstream::app);    
 
-    CreateChildren();
-
+    CreateChildren(); if ( !IAmTheParent() ) return 0 ;
+ 
     do {
         wpid = waitpid(-1, &Stat, WNOHANG);
         if (wpid == 0) {
             if (waittime < timeout) 
             {
-                cout << "Parent waiting " << waittime << " second(s)." << endl;
+                myFile << Utils::currentDateTime() << "Parent waiting " << waittime << " second(s)." << endl;
                 waittime ++;
                 nanosleep(&sleepTime, NULL); //should handle EINTR here... perhaps encapsulate sleep.
             }
             else {
-                cout << "Killing child process" << endl ;
+                myFile << Utils::currentDateTime() << "Killing child process" << endl ;
               //  kill(pid, SIGKILL); 
             }
         }
 //    } while (wpid == 0 && waittime <= timeout);
     } while ( waittime <= timeout);
+
+    return 0 ;
 }

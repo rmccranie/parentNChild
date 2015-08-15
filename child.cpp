@@ -1,21 +1,33 @@
 #include "child.h"
+#include "utils.h"
 #include <sys/prctl.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
-Child::Child ()
+Child::Child (int cn) :
+childNum (cn)
 {
 
-    cout << "I am (really) the child! " << endl ;
 }
 
 int Child::Run ()
 {
+    //-- Set process name to "Child"
     char mynameis[] = "Child" ;
     prctl(PR_SET_NAME, (unsigned long) mynameis, 0, 0, 0);
-    for ( int i = 0 ; i < 10; i++ )
+    stringstream filename ;
+    filename << Settings::getLogPath() << "/Child_" << childNum << "_log.txt" ;
+    
+    myFile.open (filename.str().c_str(), std::ofstream::out | std::ofstream::app);    
+
+    myFile << Utils::currentDateTime() << ": I am the child: " << childNum << " logging to " << Settings::getLogPath() << endl ;
+    while ( 1 )
     {
-        cout << "and I'm running..." << endl ;
+        myFile << Utils::currentDateTime() << ": and I'm running..." << endl ;
         sleep(1);
     }
 }
