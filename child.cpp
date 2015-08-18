@@ -52,6 +52,6 @@ int Child::Run ()
         }
 
         myFile << Utils::currentDateTime() << ": message receieved - "
-               << rbuf.num1 << ", " << rbuf.num2 << endl ;
+               << rbuf.num1 << ", " << rbuf.num2 << ": sum = " << rbuf.num1+rbuf.num2 << endl ;
     }
 }
