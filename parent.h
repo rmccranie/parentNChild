@@ -5,6 +5,7 @@
 #include <csignal>
 #include <fstream>
 #include "settings.h"
+#include "pc_comms.h"
 
 using namespace std;
 
@@ -20,13 +21,11 @@ public:
 private:
     int children ;
     pid_t parentPid ;
-    struct sigaction act;
     ofstream myFile ;
-
+    ParentChildComms * pc_comms ;
      //-- Private functions
     bool IAmTheParent() ;
     void CreateChildren() ;
-    int CreateFifo (char *) ;
 };
 
 #endif
