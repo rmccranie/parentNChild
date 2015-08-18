@@ -114,7 +114,7 @@ int Parent::Run()
 
     while (1)
     {
-        myFile << Utils::currentDateTime() << "Parent sending message: " 
+        myFile << Utils::currentDateTime() << ": Parent sending message: " 
                << message.num1 << ", " << message.num2 <<  endl;
 
         pc_comms->SendToChildren (&message) ;

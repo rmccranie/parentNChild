@@ -1,13 +1,22 @@
 #include "utils.h"
+#include <sys/time.h>
+#include <cstdio>
 
 const std::string Utils::currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    char            fmt[64], buf[80];
+    struct timeval  tv;
+
+    struct tm*  tstruct;
+
+    gettimeofday(&tv, NULL);
+    if((tstruct = localtime(&tv.tv_sec)) != NULL)
+    {
+        strftime(fmt, sizeof fmt, "%Y-%m-%d %H:%M:%S.%%06u", tstruct);
+        snprintf(buf, sizeof buf, fmt, tv.tv_usec);
+    }
+
     return buf;
 }
+
 
