@@ -37,7 +37,7 @@ int Child::Run ()
 
     if ((msqid = msgget(queue_key, 0666)) < 0) {
         perror("msgget");
-        exit(1);
+        exit(1); //-- TODO: really needs to throw an exception
     }
 
     while ( 1 )

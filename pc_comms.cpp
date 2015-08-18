@@ -49,7 +49,8 @@ void ParentChildComms::SendMessage ( int mq, message_buf *msg )
     /*
  *  *      * Send a message.
  *   *           */
-    if (msgsnd(mq, msg, buf_length, IPC_NOWAIT) < 0) 
+    //if (msgsnd(mq, msg, buf_length, IPC_NOWAIT) < 0) 
+    if (msgsnd(mq, msg, buf_length, 0 ) < 0) 
     {
        perror("msgsnd");
        exit(1);
@@ -59,7 +60,8 @@ void ParentChildComms::SendMessage ( int mq, message_buf *msg )
 //-- Send an assignment to all children.
 bool ParentChildComms::SendToChildren (message_buf *msg)
 {
-    //-- Iterate through the endpoint collection and send same message to each child (that's our architecture).
+    //-- Iterate through the endpoint collection and send same message to each 
+    //-- child (that's our architecture).
     childCompleteBitField = 0x00; //-- initialize the indicator for completion ; 
 
     for (std::vector<ChildData*>::iterator it = childEndPoints.begin() ; it != childEndPoints.end(); ++it)
