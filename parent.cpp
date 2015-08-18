@@ -45,7 +45,6 @@ int Parent::CreateChild( int cn )
     //-- to object methods on pc_comms from children.
     int64_t parentPointer = (int64_t) pc_comms;
  
-    cout << "parent pointer: " << parentPointer << endl ;
     /* Create child process: */
     PID = fork();
 
@@ -67,13 +66,15 @@ int Parent::CreateChild( int cn )
 
     }
 
+    return PID ;
 }
 
 void Parent::CreateChildren()
 {
     for ( int i = 0; i < numberOfChildren; i++ )
     {
-        CreateChild(i);
+        int pid = CreateChild(i);
+        pc_comms->AddChildCommEndpoint (i, pid) ;
     }
 }
 int Parent::Run()
@@ -103,7 +104,24 @@ int Parent::Run()
     myFile.open (filename.str().c_str(), std::ofstream::out | std::ofstream::app);    
 
     CreateChildren(); if ( !IAmTheParent() ) return 0 ;
- 
+
+    message_buf message ;
+    message.m_type = 1 ;
+    message.num1 =  1234 ;
+    message.num2 = 5678 ;
+    message.cmd_type = start ;
+    message.op_type = simple ;
+
+    while (1)
+    {
+        myFile << Utils::currentDateTime() << "Parent sending message:i " 
+               << message.num1 << ", " << message.num2 <<  endl;
+
+        pc_comms->SendToChildren (&message) ;
+
+        nanosleep(&sleepTime, NULL); //should handle EINTR here... perhaps encapsulate sleep.
+    } 
+
     do {
         wpid = waitpid(-1, &Stat, WNOHANG);
         if (wpid == 0) {
