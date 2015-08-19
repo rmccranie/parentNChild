@@ -1,1 +1,38 @@
 parentNChild
+
+This application implements the coding exercise described in the 
+PDF file associated with this repository. The general idea is a
+parent P creates children C1, C2….C10 each with file handles F1,F2….F10. 
+Parent sends a message (say couple of random numbers), the child picks 
+the numbers and computes the sum and writes them to their individual file.
+
+The implementation for this example is admittedly contrived to demonstrate
+comfort with a variety of topics. Among them C++ and associated object-
+oriented concepts (probably most prominently good encapsulation technique),
+use of open source libraries, and use of Unix/Linux interprocess 
+communication (IPC) mechanisms.
+
+The design chosen for the app is for parent and children to exist in separate 
+processes but be single-threaded within them.  This exercise would have
+been simple to implement if the design was based on a single-process, multi-
+threaded model.  (The problem statement wording "use IPC" was take literally).
+
+The IPC mechanism(s) chosen to facilitate this are a message queue for sending 
+parent->child messages and signals to indicate completion.  Message queues
+were chosen because I believe I can synchronize the children with parent
+messaging (children "pend" on a queue) and because I wanted to play with them.
+
+Building the application requires installation of the boost libraries (used
+for creating the logging directory). "make" will build the app.  To run the app,
+you may either start with "./parentNchild" or "./parentNchild &" (put in
+background).  If you start normally, just control-c to kill everything.  If you
+start by putting the app in the background, you can issue "killall Parent" to
+kill. The app will log per the spec (though technically using streams rather 
+than C style file handles).  
+
+At the moment, some things like the logging directory (./log) are hard-coded. 
+The intent is to have this plus items specified as configurable in the 
+problem statement to be so via the "Settings" object (static methods to make 
+such things available to the rest of the app).
+
+
