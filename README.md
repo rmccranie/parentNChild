@@ -24,11 +24,15 @@ messaging (children "pend" on a queue) and because I wanted to play with them.
 
 Building the application requires installation of the boost libraries (used
 for creating the logging directory). "make" will build the app.  To run the app,
-you may either start with "./parentNchild" or "./parentNchild &" (put in
-background).  If you start normally, just control-c to kill everything.  If you
-start by putting the app in the background, you can issue "killall Parent" to
-kill. The app will log per the spec (though technically using streams rather 
-than C style file handles).  
+issue:
+    "./parentNchild &" (put in background).  
+
+To shutdown the app cleanly, issue:
+   kill -SIGHUP `pgrep Parent`
+
+The app will log per the spec (though technically using streams rather 
+than C style file handles). You may tail one of the log files to observe
+the app in action. 
 
 At the moment, some things like the logging directory (./log) are hard-coded. 
 The intent is to have this plus items specified as configurable in the 

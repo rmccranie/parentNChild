@@ -12,11 +12,12 @@ class Child
 {
 
 public: 
-    Child(int, int64_t);
+    Child(int, int64_t, pid_t);
     int Run() ;
 
 private:
     pid_t myPid ;
+    pid_t parentPid ;
     int childNum;
     int64_t parentPointer ;
     ofstream myFile;

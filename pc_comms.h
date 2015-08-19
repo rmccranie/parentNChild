@@ -5,6 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <signal.h>
+#include <inttypes.h>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ using namespace std;
 //-- Define message structure.
 typedef enum CommandType   { start, stop, quit }    CommandType;
 typedef enum OperationType { simple, medium, hard } OperationType;
+
 typedef struct message_buf
 {
     long          m_type;
@@ -25,16 +27,17 @@ typedef struct message_buf
 
 
 const key_t queue_key = 1234 ;
-
+const int operation_delay_ns [3] = { 10000000, 100000000, 500000000 } ;
 class ParentChildComms
 {
 public:
-    ParentChildComms () ;
+    ParentChildComms (pid_t) ;
     //-- This is the broadcast method to message all children.
     bool SendToChildren ( message_buf* );
     void AddChildCommEndpoint (int, int);
     bool AllChildrenAckComplete () ;
     void SetChildComplete (int) ; 
+    bool WaitForCompletion (int) ;
 private:
     void SendMessage ( int, message_buf* ) ;
     //-- Encapsulate data needed to communicate with a child.
@@ -54,8 +57,8 @@ private:
     struct sigaction act;
     vector<ChildData *> childEndPoints ;
     //-- an unsigned char will do to hold this for now.
-    unsigned char childCompleteBitField ;
-
+    int16_t childCompleteBitField ;
+    pid_t parentPid ;
 } ;
 
 #endif

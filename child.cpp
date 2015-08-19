@@ -8,12 +8,14 @@
 #include <cstdio>
 #include "pc_comms.h"
 #include <cstdlib>
+#include <signal.h>
 
 using namespace std;
 
-Child::Child (int cn, int64_t pp) :
+Child::Child (int cn, int64_t pp, int ppid) :
 childNum (cn),
-parentPointer (pp)
+parentPointer (pp),
+parentPid (ppid)
 {
 
 }
@@ -51,7 +53,29 @@ int Child::Run ()
             exit(1);
         }
 
+        struct timespec sleepTime ;
+        sleepTime.tv_sec = 0 ;
+        sleepTime.tv_nsec = operation_delay_ns[rbuf.op_type] ;
+
+        if ( rbuf.cmd_type == stop )
+            break ; 
+        //-- Perform the computation requested
         myFile << Utils::currentDateTime() << ": message receieved - "
                << rbuf.num1 << ", " << rbuf.num2 << ": sum = " << rbuf.num1+rbuf.num2 << endl ;
+
+        //-- I'm using sleep time to emulate computational complexity.
+        //-- This could be done in a number of ways (such selecting different
+        //-- math operations to do with the numbers), but delay is a pretty 
+        //-- decent analog.
+        nanosleep (&sleepTime, NULL ) ;
+
+        union sigval value ;
+
+        value.sival_ptr = (void*) parentPointer ;
+
+        myFile << Utils::currentDateTime() << ": operation complete!" << endl ;
+
+        //-- Signal
+        int ret = sigqueue ( parentPid, SIGRTMIN, value ) ;
     }
 }
