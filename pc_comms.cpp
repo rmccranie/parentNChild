@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <errno.h>
 
 void sighandler(int signum, siginfo_t *info, void *ptr)
 {
@@ -103,8 +103,25 @@ bool ParentChildComms::WaitForCompletion (int timeout )
 
     while ( waittime < timeout )
     {
-        waittime++ ;
-        nanosleep(&sleepTime, NULL); //should handle EINTR here. perhaps encapsulate sleep.
+         waittime++ ;
+
+         //-- Ensure precise sleep time by handling EINTR (we
+         //-- expect to be interrupted by signals)
+         while (1)
+         {
+             /* Sleep for the time specified in tv. If interrupted by a
+              * signal, place the remaining time left to sleep back into tv. */
+             int rval = nanosleep (&sleepTime, &sleepTime);
+             if (rval == 0)
+             /* Completed the entire sleep time; all done. */
+                 break;
+             else if (errno == EINTR)
+             /* Interrupted by a signal. Try again. */
+                 continue;
+             else 
+             /* Some other error; bail out. */
+                 break;
+        }
         if ( AllChildrenAckComplete() )
             return true  ;
     }

@@ -126,11 +126,11 @@ int Parent::Run()
     message.m_type = 1 ;
     message.num1 =  1234 ;
     message.num2 = 5678 ;
-    message.cmd_type = start ; //-- this will be used to shut down children in orderly fashion.
+    message.cmd_type = start ; 
     message.op_type = simple ;
 
-    //-- This is the main app loop.  For now, manually kill.  Will
-    //-- add means to break out via signals send from command line.
+    //-- This is the main app loop. It sends messages and waits for 
+    //-- responses from children.
     while (1)
     {
         myFile << Utils::currentDateTime() << ": Parent sending message: " 
