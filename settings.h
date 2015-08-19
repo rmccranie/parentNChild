@@ -14,10 +14,13 @@ class Settings
 public:
 
     static string &getLogPath()  { return logPath ;  }
-    static string &getFifoPath() { return fifoPath ; }
+    static string &getIniFilename() { return iniFilename ; }
+    static void setSendingRate(int rate) { sendingRate = rate ; }
+    static int getSendingRate () { return sendingRate; }
 private:
     static string logPath ;
-    static string fifoPath ;
+    static string iniFilename ;
+    static int sendingRate ;
 };
 
 #endif

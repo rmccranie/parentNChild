@@ -38,6 +38,7 @@ public:
     bool AllChildrenAckComplete () ;
     void SetChildComplete (int) ; 
     bool WaitForCompletion (int) ;
+    void SetMessagingPeriod (int);
 private:
     void SendMessage ( int, message_buf* ) ;
     //-- Encapsulate data needed to communicate with a child.
@@ -59,6 +60,7 @@ private:
     //-- an unsigned char will do to hold this for now.
     int16_t childCompleteBitField ;
     pid_t parentPid ;
+    int messagingPeriod; 
 } ;
 
 #endif

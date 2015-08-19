@@ -1,5 +1,9 @@
 parentNChild
 
+NOTE: I diverged from the problem statement as given in 2 ways:
+  - I used C++ versus C.
+  - I used C++-style file handling versus C-style.
+
 This application implements the coding exercise described in the 
 PDF file associated with this repository. The general idea is a
 parent P creates children C1, C2….C10 each with file handles F1,F2….F10. 
@@ -28,11 +32,15 @@ issue:
     "./parentNchild &" (put in background).  
 
 To shutdown the app cleanly, issue:
-   kill -SIGHUP `pgrep Parent`
+   kill    -SIGHUP `pgrep Parent`   or
+   killall -SIGHUP Parent
 
 The app will log per the spec (though technically using streams rather 
 than C style file handles). You may tail one of the log files to observe
 the app in action. 
+
+In order to set the number of messages desired (per second) edit that value
+in the parentNChild.ini file.
 
 At the moment, some things like the logging directory (./log) are hard-coded. 
 The intent is to have this plus items specified as configurable in the 

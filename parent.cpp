@@ -129,6 +129,8 @@ int Parent::Run()
     message.cmd_type = start ; 
     message.op_type = simple ;
 
+    pc_comms->SetMessagingPeriod (Settings::getSendingRate()) ;
+
     //-- This is the main app loop. It sends messages and waits for 
     //-- responses from children.
     while (1)

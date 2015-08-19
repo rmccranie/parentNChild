@@ -1,6 +1,15 @@
 #include "utils.h"
 #include <sys/time.h>
 #include <cstdio>
+#include <iostream>
+#include <fstream>
+#include <settings.h>
+#include <sstream>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
+
+using namespace std ;
 
 const std::string Utils::currentDateTime() {
 
@@ -19,4 +28,20 @@ const std::string Utils::currentDateTime() {
     return buf;
 }
 
+bool Utils::loadIniFile ()
+{
+    boost::property_tree::ptree pt;
+    try 
+    {
 
+       boost::property_tree::ini_parser::read_ini(Settings::getIniFilename().c_str(), pt);
+   
+       Settings::setSendingRate (atoi((pt.get<std::string>("Section1.pc_sending_rate")).c_str()));
+    }
+    catch (exception e)
+    {
+        cout << "Exception: " << e.what() << endl;
+    }
+
+    return true;
+}

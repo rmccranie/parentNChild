@@ -91,17 +91,31 @@ bool ParentChildComms::AllChildrenAckComplete ( )
 {
     return childCompleteBitField == 0x3FF ; 
 }
+#define NANO_SECONDS_PER_SECOND 1000000000 
+void ParentChildComms::SetMessagingPeriod (int msgPerSec)
+{
+  messagingPeriod = (int)((1.0/msgPerSec)*NANO_SECONDS_PER_SECOND) ;
+}
 
 bool ParentChildComms::WaitForCompletion (int timeout )
 {
     struct timespec sleepTime ;
-    sleepTime.tv_sec = 1 ;
-    sleepTime.tv_nsec = 0;
-//    sleepTime.tv_nsec = 100000000 ;
+    if ( messagingPeriod < NANO_SECONDS_PER_SECOND )
+    {
+        sleepTime.tv_sec =  0;
+        sleepTime.tv_nsec = messagingPeriod;
+    }
+    else
+    {
+        sleepTime.tv_sec = messagingPeriod/NANO_SECONDS_PER_SECOND ;
+        sleepTime.tv_nsec = 0;
+    }    
+//    sleepTime.tv_nsec = messagingPeriod;
 
+    cout << "messaging period: " << sleepTime.tv_nsec << endl;
     int waittime = 0 ;
 
-    while ( waittime < timeout )
+//    while ( waittime < (timeout*NANO_SECONDS_PER_SECOND) )
     {
          waittime++ ;
 
@@ -109,6 +123,7 @@ bool ParentChildComms::WaitForCompletion (int timeout )
          //-- expect to be interrupted by signals)
          while (1)
          {
+             cout << "Waiting: " << waittime << endl ;
              /* Sleep for the time specified in tv. If interrupted by a
               * signal, place the remaining time left to sleep back into tv. */
              int rval = nanosleep (&sleepTime, &sleepTime);
