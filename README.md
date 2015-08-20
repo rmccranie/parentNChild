@@ -39,12 +39,8 @@ The app will log per the spec (though technically using streams rather
 than C style file handles). You may tail one of the log files to observe
 the app in action. 
 
-In order to set the number of messages desired (per second) edit that value
-in the parentNChild.ini file.
-
-At the moment, some things like the logging directory (./log) are hard-coded. 
-The intent is to have this plus items specified as configurable in the 
-problem statement to be so via the "Settings" object (static methods to make 
-such things available to the rest of the app).
-
+Items configurable from INI file:
+  - Sending rate
+  - Log path
+  - Operation complexity
 
