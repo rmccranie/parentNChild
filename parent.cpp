@@ -127,7 +127,7 @@ int Parent::Run()
     message.num1 =  1234 ;
     message.num2 = 5678 ;
     message.cmd_type = start ; 
-    message.op_type = simple ;
+    message.op_type = Settings::getComplexity() ;
 
     pc_comms->SetMessagingPeriod (Settings::getSendingRate()) ;
 

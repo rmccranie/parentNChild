@@ -112,7 +112,6 @@ bool ParentChildComms::WaitForCompletion (int timeout )
     }    
 //    sleepTime.tv_nsec = messagingPeriod;
 
-    cout << "messaging period: " << sleepTime.tv_nsec << endl;
     int waittime = 0 ;
 
 //    while ( waittime < (timeout*NANO_SECONDS_PER_SECOND) )
@@ -123,7 +122,6 @@ bool ParentChildComms::WaitForCompletion (int timeout )
          //-- expect to be interrupted by signals)
          while (1)
          {
-             cout << "Waiting: " << waittime << endl ;
              /* Sleep for the time specified in tv. If interrupted by a
               * signal, place the remaining time left to sleep back into tv. */
              int rval = nanosleep (&sleepTime, &sleepTime);

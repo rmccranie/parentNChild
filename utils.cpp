@@ -33,10 +33,11 @@ bool Utils::loadIniFile ()
     boost::property_tree::ptree pt;
     try 
     {
-
        boost::property_tree::ini_parser::read_ini(Settings::getIniFilename().c_str(), pt);
    
        Settings::setSendingRate (atoi((pt.get<std::string>("Section1.pc_sending_rate")).c_str()));
+       Settings::setComplexity (pt.get<std::string>("Section1.pc_complexity"));
+       Settings::setLogPath (pt.get<std::string>("Section1.pc_log_directory"));
     }
     catch (exception e)
     {
